@@ -1602,6 +1602,10 @@ const RAW_QUESTIONS = [
 ];
 
 // 对非判断题做确定性轮换，避免正确答案长期集中在 A 或固定组合。
+RAW_QUESTIONS.push(
+  ...(Array.isArray(window.EXTRA_QUESTIONS) ? window.EXTRA_QUESTIONS : []),
+);
+
 const CHOICE_ROTATION = [2, 1, 3, 0, 0, 1, 3, 0, 0, 3, 1, 1, 0, 3, 2, 0, 2, 2, 3, 1];
 const OPTION_KEYS = ["A", "B", "C", "D"];
 
