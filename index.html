@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="《建筑工程物联网》专项题库，面向广联达 BIM 毕设大赛资格海选赛的网页刷题工具">
+  <title>建筑工程物联网 · 专项刷题</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="extra.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-button mobile-only" type="button" id="leftDrawerButton" aria-label="打开练习菜单">
+          <i data-lucide="menu" aria-hidden="true"></i>
+        </button>
+        <a class="brand" href="./" aria-label="返回刷题首页">
+          <span class="brand-mark">IoT</span>
+          <span class="brand-copy">
+            <strong>建筑工程物联网</strong>
+            <small>BIM 毕设海选 · 专项题库</small>
+          </span>
+        </a>
+      </div>
+      <div class="topbar-center">
+        <div class="top-progress-copy">
+          <span id="topProgressText">进度 0 / 0</span>
+          <span id="mockStatus" class="top-status">练习模式</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-label="总体完成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="topProgressTrack">
+          <span id="topProgressBar"></span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="timer" aria-label="本次练习计时">
+          <i data-lucide="timer" aria-hidden="true"></i>
+          <span id="timerText">00:00</span>
+        </div>
+        <button class="icon-button" type="button" id="themeButton" aria-label="切换深浅主题">
+          <i data-lucide="moon" aria-hidden="true"></i>
+        </button>
+        <button class="answer-toggle icon-button" type="button" id="answerDrawerButton" aria-label="打开答题卡">
+          <i data-lucide="layout-grid" aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="left-sidebar" id="leftSidebar" aria-label="练习导航">
+        <div class="sidebar-heading">
+          <span>练习中心</span>
+          <button class="icon-button sidebar-close" type="button" id="leftDrawerClose" aria-label="关闭练习菜单">
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <nav class="mode-list" id="modeList" aria-label="练习模式"></nav>
+
+        <div class="sidebar-section">
+          <div class="sidebar-section-title">
+            <span>按教材模块</span>
+            <span id="moduleCount">0 个</span>
+          </div>
+          <div class="course-list" id="moduleList"></div>
+        </div>
+
+        <div class="sidebar-note">
+          <div class="sidebar-note-row">
+            <i data-lucide="badge-check" aria-hidden="true"></i>
+            <span>样章已核实 <strong id="sampleTotal">0</strong> 题</span>
+          </div>
+          <div class="sidebar-note-row">
+            <i data-lucide="book-open" aria-hidden="true"></i>
+            <span>共 <strong id="questionTotal">0</strong> 道原创题</span>
+          </div>
+          <div class="evidence-legend" aria-label="题目依据图例">
+            <span><i class="evidence-dot sample"></i>样章</span>
+            <span><i class="evidence-dot toc"></i>目录</span>
+            <span><i class="evidence-dot supplement"></i>拓展</span>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="text-button danger-text" type="button" id="resetProgressButton">
+            <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+            清空作答记录
+          </button>
+        </div>
+      </aside>
+
+      <main class="practice-area" id="practiceArea">
+        <div class="filter-bar">
+          <div class="filter-row">
+            <label class="search-box" for="searchInput">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <input id="searchInput" type="search" autocomplete="off" placeholder="搜索题干、知识点、项目或任务">
+              <button type="button" class="clear-search" id="clearSearchButton" aria-label="清空搜索">
+                <i data-lucide="x" aria-hidden="true"></i>
+              </button>
+            </label>
+            <div class="segmented" id="studyModeSwitch" role="group" aria-label="作答模式">
+              <button type="button" data-study-mode="practice" aria-pressed="true">作答</button>
+              <button type="button" data-study-mode="study" aria-pressed="false">背题</button>
+            </div>
+            <button class="secondary-button" type="button" id="randomButton">
+              <i data-lucide="shuffle" aria-hidden="true"></i>
+              随机一题
+            </button>
+          </div>
+          <div class="filter-row compact-filters">
+            <select id="moduleFilter" aria-label="按教材模块筛选">
+              <option value="">全部模块</option>
+            </select>
+            <select id="sourceFilter" aria-label="按来源筛选">
+              <option value="">全部依据</option>
+              <option value="sample">教材样章已核实</option>
+              <option value="toc">教材目录推导</option>
+              <option value="supplement">原理拓展</option>
+            </select>
+            <select id="typeFilter" aria-label="按题型筛选">
+              <option value="">全部题型</option>
+              <option value="single">单选题</option>
+              <option value="multiple">多选题</option>
+              <option value="judgment">判断题</option>
+              <option value="scenario">综合应用题</option>
+            </select>
+            <button class="ghost-button" type="button" id="resetFiltersButton">
+              <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+              重置筛选
+            </button>
+            <span class="result-count" id="resultCount">0 题</span>
+          </div>
+        </div>
+
+        <section class="question-stage" id="questionStage" aria-live="polite">
+          <div class="question-shell">
+            <div class="question-topline">
+              <div class="question-meta" id="questionMeta"></div>
+              <div class="question-actions-top">
+                <button class="icon-button" type="button" id="markButton" aria-label="收藏本题" title="收藏本题">
+                  <i data-lucide="star" aria-hidden="true"></i>
+                </button>
+                <button class="icon-button" type="button" id="copyQuestionButton" aria-label="复制本题文本" title="复制本题">
+                  <i data-lucide="copy" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="question-heading" id="questionHeading"></div>
+            <div class="question-stem" id="questionStem"></div>
+
+            <figure class="figure-panel" id="figurePanel" hidden>
+              <button class="figure-preview" type="button" id="figurePreviewButton">
+                <img id="figureImage" alt="原题图">
+                <span class="figure-zoom"><i data-lucide="expand" aria-hidden="true"></i> 查看原题图</span>
+              </button>
+              <figcaption id="figureCaption"></figcaption>
+            </figure>
+
+            <div class="answer-area" id="answerArea"></div>
+
+            <div class="feedback-panel" id="feedbackPanel" hidden>
+              <div class="feedback-heading">
+                <span id="feedbackIcon" class="feedback-icon"></span>
+                <strong id="feedbackTitle"></strong>
+              </div>
+              <div class="feedback-answer">
+                <span>参考答案</span>
+                <div id="feedbackAnswer"></div>
+              </div>
+              <div class="feedback-explanation" id="feedbackExplanation"></div>
+              <div class="feedback-meta" id="feedbackMeta"></div>
+              <div class="self-grade" id="selfGrade" hidden>
+                <span>本题答案是否与你的作答一致？</span>
+                <button type="button" data-self-grade="correct">
+                  <i data-lucide="check" aria-hidden="true"></i> 答对
+                </button>
+                <button type="button" data-self-grade="wrong">
+                  <i data-lucide="x" aria-hidden="true"></i> 答错
+                </button>
+              </div>
+              <button class="text-button" type="button" id="retryButton">
+                <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                重做本题
+              </button>
+            </div>
+
+            <div class="question-footer">
+              <button class="secondary-button" type="button" id="prevButton">
+                <i data-lucide="arrow-left" aria-hidden="true"></i>
+                上一题
+              </button>
+              <div class="footer-center">
+                <span id="questionPosition">第 0 / 0 题</span>
+              </div>
+              <button class="primary-button" type="button" id="submitButton">提交答案</button>
+              <button class="secondary-button" type="button" id="nextButton">
+                下一题
+                <i data-lucide="arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <aside class="right-sidebar" id="rightSidebar" aria-label="答题卡">
+        <div class="answer-sheet">
+          <div class="answer-sheet-header">
+            <div>
+              <span class="panel-kicker">答题卡</span>
+              <h2 id="sheetTitle">全部题目</h2>
+            </div>
+            <button class="icon-button sidebar-close" type="button" id="rightDrawerClose" aria-label="关闭答题卡">
+              <i data-lucide="x" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <div class="score-row">
+            <div>
+              <strong id="answeredCount">0</strong>
+              <span>已答</span>
+            </div>
+            <div>
+              <strong id="correctCount">0</strong>
+              <span>正确</span>
+            </div>
+            <div>
+              <strong id="wrongCount">0</strong>
+              <span>错误</span>
+            </div>
+          </div>
+
+          <div class="sheet-legend" aria-label="答题卡图例">
+            <span><i class="legend-dot current"></i>当前</span>
+            <span><i class="legend-dot correct"></i>正确</span>
+            <span><i class="legend-dot wrong"></i>错误</span>
+            <span><i class="legend-dot marked"></i>收藏</span>
+          </div>
+
+          <div class="answer-grid" id="answerGrid" aria-label="题号导航"></div>
+
+          <div class="answer-sheet-footer">
+            <button class="secondary-button full-width" type="button" id="unansweredButton">
+              <i data-lucide="circle-dashed" aria-hidden="true"></i>
+              只看未答
+            </button>
+            <button class="primary-button full-width" type="button" id="finishButton">
+              <i data-lucide="flag" aria-hidden="true"></i>
+              查看本次成绩
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <nav class="mobile-nav" aria-label="移动端题目导航">
+      <button type="button" id="mobilePrevButton" aria-label="上一题"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+      <button type="button" id="mobileSubmitButton" class="mobile-submit">提交</button>
+      <button type="button" id="mobileAnswerButton" aria-label="打开答题卡"><i data-lucide="layout-grid" aria-hidden="true"></i></button>
+      <button type="button" id="mobileNextButton" aria-label="下一题"><i data-lucide="chevron-right" aria-hidden="true"></i></button>
+    </nav>
+  </div>
+
+  <div class="drawer-overlay" id="drawerOverlay" hidden></div>
+
+  <div class="modal" id="imageModal" role="dialog" aria-modal="true" aria-labelledby="imageModalTitle" hidden>
+    <div class="modal-sheet image-modal-sheet">
+      <div class="modal-header">
+        <div>
+          <span class="panel-kicker">原题页</span>
+          <h2 id="imageModalTitle">题图</h2>
+        </div>
+        <button class="icon-button" type="button" id="closeImageModal" aria-label="关闭图片">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="image-toolbar">
+        <button class="icon-button" type="button" id="zoomOutButton" aria-label="缩小"><i data-lucide="zoom-out" aria-hidden="true"></i></button>
+        <span id="zoomLabel">100%</span>
+        <button class="icon-button" type="button" id="zoomInButton" aria-label="放大"><i data-lucide="zoom-in" aria-hidden="true"></i></button>
+        <button class="ghost-button" type="button" id="zoomResetButton">还原</button>
+      </div>
+      <div class="image-scroll" id="imageScroll">
+        <img id="modalImage" alt="原题大图">
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle" hidden>
+    <div class="modal-sheet result-sheet">
+      <div class="modal-header">
+        <div>
+          <span class="panel-kicker">练习结果</span>
+          <h2 id="resultTitle">本次成绩</h2>
+        </div>
+        <button class="icon-button" type="button" id="closeResultModal" aria-label="关闭结果">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-details" id="resultDetails"></div>
+      <div class="result-actions">
+        <button class="secondary-button" type="button" id="continuePracticeButton">继续练习</button>
+        <button class="primary-button" type="button" id="reviewWrongButton">练错题</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+  <script src="lucide.min.js"></script>
+  <script src="questions.js?v=20261030"></script>
+  <script src="app.js?v=20261030"></script>
+</body>
+</html>
